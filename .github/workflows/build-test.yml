@@ -156,7 +156,7 @@ jobs:
           }
 
           # Write variables
-          echo BuildConfiguration=$build_config >> $env.GITHUB_ENV
+          echo BuildConfiguration=$build_config | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Setup dotnet
         uses: actions/setup-dotnet@v4
         with:
@@ -166,7 +166,9 @@ jobs:
         run: dotnet restore
       - name: Build
         working-directory: ./src
-        run: dotnet build --configuration $env:BuildConfiguration --no-restore
+        run: |
+            echo "$env:BuildConfiguration"
+            dotnet build --configuration ${{ BuildConfiguration }} --no-restore
       - name: Test with the dotnet CLI
         working-directory: ./src
         run: dotnet test --no-build
