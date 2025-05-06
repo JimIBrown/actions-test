@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
+    <VersionPrefix></VersionPrefix>
+    <VersionSuffix></VersionSuffix>
+    <PackageVersion></PackageVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>actions_test</RootNamespace>
