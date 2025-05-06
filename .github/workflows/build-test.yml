@@ -169,7 +169,7 @@ jobs:
         working-directory: ./src
         run: |
             echo "BuildConfiguration: $BuildConfiguration"
-            dotnet build --no-restore
+            dotnet build --configuration $BuildConfiguration --no-restore
       - name: Test with the dotnet CLI
         working-directory: ./src
         run: dotnet test --no-build
