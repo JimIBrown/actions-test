@@ -120,3 +120,50 @@ jobs:
           write-host ""        
           write-host "version: " $version
           write-host "packageVersion: " $packageVersion
+
+          $versionPattern = '<Version>.*</Version>'
+          $prefixPattern = '<VersionPrefix>.*</VersionPrefix>'
+          $suffixPattern = '<VersionSuffix>.*</VersionSuffix>'
+          $packageVersionPattern = '<PackageVersion>.*</PackageVersion>'
+          $newPrefix = '<VersionPrefix>' + $json.Version +'</VersionPrefix>'
+          $newSuffix = '<VersionSuffix>' + $suffix +'</VersionSuffix>'
+          $newPackageVersion = '<PackageVersion>' + $packageVersion +'</PackageVersion>'
+          
+          $errorMessage = ''
+          $files = get-childitem -Filter '*.csproj' -Recurse -File | Select-Object
+          foreach ($file in $files) 
+          {
+              write-host "Updating Version: " $file.FullName
+              
+              $matches = select-string -path $file.FullName -Pattern $versionPattern
+              if ($matches -ne $null) {
+                  $errorMessage +=  "Please use VersionPrefix and VersionSuffix instead of Version in :" + $file.FullName + "`n"
+              }
+              $matches = select-string -path $file.FullName -Pattern $prefixPattern
+              if ($matches -eq $null) {
+                  $errorMessage +=  "Could not locate VersionPrefix in :" + $file.FullName + "`n"
+              }
+              $matches = select-string -path $file.FullName -Pattern $suffixPattern
+              if ($matches -eq $null) {
+                  $errorMessage +=  "Could not locate VersionSuffix in :" + $file.FullName + "`n"
+              }
+              $matches = select-string -path $file.FullName -Pattern $packageVersionPattern
+              if ($matches -eq $null) {
+                  $errorMessage +=  "Could not locate PackageVersion in :" + $file.FullName + "`n"
+              }
+              #Update Prefix
+              (Get-Content $file.FullName) | % ` { $_-replace $prefixPattern, $newPrefix } |  Set-Content $file.FullName
+              #Update Suffix
+              (Get-Content $file.FullName) | % ` { $_-replace $suffixPattern, $newSuffix } |  Set-Content $file.FullName
+              #Update PackageVersion
+              (Get-Content $file.FullName) | % ` { $_-replace $packageVersionPattern, $newPackageVersion } |  Set-Content $file.FullName
+          }
+
+          if ($errorMessage.length) 
+          {
+            $errorMessage =  "Unable to apply versioning, please fix the following errors:`n" + $errorMessage
+            throw $errorMessage
+          }
+
+          # Write variables    
+          Write-Output ::set-output name=BuildConfiguration::$build_config
