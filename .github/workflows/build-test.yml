@@ -19,6 +19,8 @@ jobs:
     name: actions test
     runs-on: ubuntu-latest
     steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
       - name: set variables
         run: |
           shortSha=$(git rev-parse --short ${{ github.sha }})
