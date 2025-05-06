@@ -170,7 +170,7 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.x
+          dotnet-version: 9.x
       - name: Install dependencies
         working-directory: ./src
         run: dotnet restore
