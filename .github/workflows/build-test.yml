@@ -156,7 +156,7 @@ jobs:
           }
 
           # Write variables
-          echo "BuildConfiguration=$build_config" >> $env:GITHUB_OUTPUT
+          echo ::set-output "BuildConfiguration=$build_config"
       - name: Setup dotnet
         uses: actions/setup-dotnet@v4
         with:
