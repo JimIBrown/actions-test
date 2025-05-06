@@ -167,7 +167,7 @@ jobs:
       - name: Build
         working-directory: ./src
         run: |
-            echo "$env:BuildConfiguration"
+            echo "BuildConfiguration: $env:BuildConfiguration"
             dotnet build --configuration ${{ BuildConfiguration }} --no-restore
       - name: Test with the dotnet CLI
         working-directory: ./src
