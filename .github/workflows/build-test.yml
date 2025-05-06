@@ -26,12 +26,24 @@ jobs:
           shortSha=$(git rev-parse --short ${{ github.sha }})
           echo "SHORT_SHA=$shortSha" >> $GITHUB_ENV
     
-      - name: print variables
+      # - name: print variables
+      #   run: |
+      #     echo "Repository name: $GITHUB_REPOSITORY"
+      #     echo "Branch: $GITHUB_REF"
+      #     echo "Branch Name: $GITHUB_REF_NAME"
+      #     echo "Run ID: $GITHUB_RUN_ID"
+      #     echo "Run Number: $GITHUB_RUN_NUMBER"
+      #     echo "SHA: $GITHUB_WORKFLOW_SHA"
+      #     echo "Short SHA: $SHORT_SHA"
+      
+      - name: powershell
+        shell: pwsh
         run: |
-          echo "Repository name: $GITHUB_REPOSITORY"
-          echo "Branch: $GITHUB_REF"
-          echo "Branch Name: $GITHUB_REF_NAME"
-          echo "Run ID: $GITHUB_RUN_ID"
-          echo "Run Number: $GITHUB_RUN_NUMBER"
-          echo "SHA: $GITHUB_WORKFLOW_SHA"
-          echo "Short SHA: $SHORT_SHA"
+          Write-Host "Repository name: $env:GITHUB_REPOSITORY"
+          Write-Host "Branch: $env:GITHUB_REF"
+          Write-Host "Branch Name: $env:GITHUB_REF_NAME"
+          Write-Host "Run ID: $env:GITHUB_RUN_ID"
+          Write-Host "Run Number: $env:GITHUB_RUN_NUMBER"
+          Write-Host "SHA: $env:GITHUB_WORKFLOW_SHA"
+          Write-Host "Short SHA: $env:SHORT_SHA"
+        
