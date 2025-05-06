@@ -45,7 +45,7 @@ jobs:
           $settingsfile = get-childitem -Filter 'settings.json' -Recurse -File | Select-Object -First 1 | %{$_.FullName}
           $json = (Get-Content $settingsfile -Raw) | ConvertFrom-Json
 
-          $shortHash = $env:SHORT_SHA
+          $short_hash = $env:SHORT_SHA
           $hash = $env:GITHUB_WORKFLOW_SHA
           $branchFull = $env:GITHUB_REF
           $branch = $branchFull.Replace("refs/heads/","")
@@ -60,7 +60,7 @@ jobs:
           Write-Host "Branch Name: $branch_name"
           Write-Host "Build ID: $buildId"
           Write-Host "SHA: $hash"
-          Write-Host "Short SHA: $shortHash"
+          Write-Host "Short SHA: $short_hash"
           Write-Host "Build Reason: $buildReason"
         
           $includeSuffixInPackageVersion = $true
