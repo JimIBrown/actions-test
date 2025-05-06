@@ -39,11 +39,84 @@ jobs:
       - name: powershell
         shell: pwsh
         run: |
-          Write-Host "Repository name: $env:GITHUB_REPOSITORY"
-          Write-Host "Branch: $env:GITHUB_REF"
-          Write-Host "Branch Name: $env:GITHUB_REF_NAME"
-          Write-Host "Run ID: $env:GITHUB_RUN_ID"
-          Write-Host "Run Number: $env:GITHUB_RUN_NUMBER"
-          Write-Host "SHA: $env:GITHUB_WORKFLOW_SHA"
-          Write-Host "Short SHA: $env:SHORT_SHA"
+
+          #Get settings file
+          $timestamp = Get-Date -Format o | ForEach-Object { $_ -replace ":", "." }
+          $settingsfile = get-childitem -Filter 'settings.json' -Recurse -File | Select-Object -First 1 | %{$_.FullName}
+          $json = (Get-Content $settingsfile -Raw) | ConvertFrom-Json
+
+          $shortHash = $env:SHORT_SHA
+          $hash = $env:GITHUB_WORKFLOW_SHA
+          $branchFull = $env:GITHUB_REF
+          $branch = $branchFull.Replace("refs/heads/","")
+          $branch_name = $env:GITHUB_REF_NAME
+          $buildId = $env:GITHUB_RUN_NUMBER
+          $repoName = $env:BUILD_REPOSITORY_NAME
+          $buildReason = $env:GITHUB_EVENT_NAME
+
+          Write-Host "Timestamp: $timestamp"
+          Write-Host "BranchFull: $branchFull"
+          Write-Host "Branch: $branch"
+          Write-Host "Branch Name: $branch_name"
+          Write-Host "Build ID: $buildId"
+          Write-Host "SHA: $hash"
+          Write-Host "Short SHA: $shortHash"
+          Write-Host "Build Reason: $buildReason"
         
+          $includeSuffixInPackageVersion = $true
+
+          #Determine version suffix detail
+          if ($buildReason -eq 'PullRequest') {
+              write-host "Source Branch: pull request"
+              $includeSuffixInPackageVersion = $false
+              $suffix = '' + $buildId + '-' + $short_hash
+              $build_config = 'Release'
+          } elseif ($branch -eq 'main') {
+              write-host "Source Branch: main"
+              $includeSuffixInPackageVersion = $false
+              $suffix = '' + $buildId + '-' + $short_hash
+              $build_config = 'Release'
+          } elseif ($branch -eq 'develop') {
+              write-host "Source Branch: develop"
+              $suffix = 'beta-' + $buildId + '-' + $short_hash
+              $build_config = 'Release'
+          } elseif ($branch.StartsWith('feature/')) {
+              write-host "Source Branch: feature"
+              $suffix = 'alpha-' + $buildId + '-' + $branch_name + '-' + $short_hash
+              $build_config = 'Debug'
+          } elseif ($branch.StartsWith('hotfix/')) {
+              write-host "Source Branch: hotfix"
+              $suffix = 'hotfix-' + $buildId + '-' + $short_hash
+              $build_config = 'Release'
+          } elseif ($branch.StartsWith('release/')) {
+              write-host "Source Branch: release"
+              $suffix = 'rc-' + $buildId + '-' + $short_hash
+              $build_config = 'Release'
+          } elseif ($branch.StartsWith('support/')) {
+              write-host "Source Branch: support"
+              $includeSuffixInPackageVersion = $false
+              $suffix = '' + $buildId + '-' + $short_hash
+              $build_config = 'Release'
+          } else {
+              throw "Unrecognised Branch: " + $branch
+          }
+
+          # Throw an error if a build suffix has not been set but should have been
+          if($buildReason -ne 'PullRequest' -and -not ($branch -eq 'main' -or $branch.StartsWith('support/')) -and $suffix -eq '')
+          {
+              throw 'The branch is not a pull request, support branch or the main branch but a package suffix has not been set'
+          }
+
+          $version = $json.Version + '-' + $suffix
+          
+          $packageVersion = $version
+
+          if (!$includeSuffixInPackageVersion)
+          {
+            $packageVersion = $json.Version
+          }
+
+          #Update csproj version
+          write-host ""        
+          write-host "version: " $version
+          write-host "packageVersion: " $packageVersion
