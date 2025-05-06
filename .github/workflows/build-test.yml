@@ -38,8 +38,7 @@ jobs:
           $short_hash = $env:SHORT_SHA
           $hash = $env:GITHUB_WORKFLOW_SHA
           $branchFull = $env:GITHUB_REF
-          $branch = $branchFull.Replace("refs/heads/","")
-          $branch_name = $env:GITHUB_REF_NAME
+          $branch = $env:GITHUB_REF_NAME
           $buildId = $env:GITHUB_RUN_NUMBER
           $repoName = $env:BUILD_REPOSITORY_NAME
           $buildReason = $env:GITHUB_EVENT_NAME
@@ -47,7 +46,6 @@ jobs:
           Write-Host "Timestamp: $timestamp"
           Write-Host "BranchFull: $branchFull"
           Write-Host "Branch: $branch"
-          Write-Host "Branch Name: $branch_name"
           Write-Host "Build ID: $buildId"
           Write-Host "SHA: $hash"
           Write-Host "Short SHA: $short_hash"
@@ -72,6 +70,7 @@ jobs:
               $build_config = 'Release'
           } elseif ($branch.StartsWith('feature/')) {
               write-host "Source Branch: feature"
+              $branch_name = $branch.replace('feature/','')
               $suffix = 'alpha-' + $buildId + '-' + $branch_name + '-' + $short_hash
               $build_config = 'Debug'
           } elseif ($branch.StartsWith('hotfix/')) {
