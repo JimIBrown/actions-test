@@ -176,10 +176,10 @@ jobs:
 
       - name: Pack
         working-directory: ./src
-        run: dotnet pack **/*.csproj --configuration $BuildConfiguration --no-build
+        run: dotnet pack **/*.csproj --configuration $BuildConfiguration --no-build --output ./pkg/.
 
       - name: Push
         working-directory: ./src
-        run: dotnet nuget push --source https://nuget.pkg.github.com/JimIBrown/index.json --api-key ${GITHUB_TOKEN}
+        run: dotnet nuget push .pkg/*.nupkg --source https://nuget.pkg.github.com/JimIBrown/index.json --api-key ${GITHUB_TOKEN}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
