@@ -56,7 +56,7 @@ jobs:
           $includeSuffixInPackageVersion = $true
 
           #Determine version suffix detail
-          if ($buildReason -eq 'PullRequest') {
+          if ($buildReason -eq 'pull_request') {
               write-host "Source Branch: pull request"
               $includeSuffixInPackageVersion = $false
               $suffix = '' + $buildId + '-' + $short_hash
@@ -93,7 +93,7 @@ jobs:
           }
 
           # Throw an error if a build suffix has not been set but should have been
-          if($buildReason -ne 'PullRequest' -and -not ($branch -eq 'main' -or $branch.StartsWith('support/')) -and $suffix -eq '')
+          if($buildReason -ne 'pull_request' -and -not ($branch -eq 'main' -or $branch.StartsWith('support/')) -and $suffix -eq '')
           {
               throw 'The branch is not a pull request, support branch or the main branch but a package suffix has not been set'
           }
@@ -176,10 +176,12 @@ jobs:
         run: dotnet test --no-build
 
       - name: Pack
+        if: ${{ github.event_name != 'pull_request' }}
         working-directory: ./src
         run: dotnet pack **/*.csproj --configuration $BuildConfiguration --no-build --output ./pkg/
 
       - name: Push
+        if: ${{ github.event_name != 'pull_request' }}
         working-directory: ./src
         run: dotnet nuget push pkg/*.nupkg --source https://nuget.pkg.github.com/JimIBrown/index.json --api-key ${GITHUB_TOKEN}
         env:
