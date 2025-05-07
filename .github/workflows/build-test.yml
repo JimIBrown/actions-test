@@ -176,7 +176,7 @@ jobs:
 
       - name: Pack
         working-directory: ./src
-        run: dotnet pack *.csproj --configuration $BuildConfiguration --no-build
+        run: dotnet pack **/*.csproj --configuration $BuildConfiguration --no-build
 
       - name: Push
         working-directory: ./src
