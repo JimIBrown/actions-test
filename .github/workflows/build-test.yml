@@ -28,7 +28,7 @@ jobs:
           shortSha=$(git rev-parse --short ${{ github.sha }})
           echo "SHORT_SHA=$shortSha" >> $GITHUB_ENV
     
-      - name: powershell
+      - name: versioning
         shell: pwsh
         run: |
 
