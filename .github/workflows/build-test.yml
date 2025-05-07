@@ -18,4 +18,4 @@ on:
   
 jobs:
   call-workflow:
-    uses: JimIBrown/actions-workflow/.github/workflows/package-nuget.yml@main
+    uses: JimIBrown/actions-workflows/.github/workflows/package-nuget.yml@main
