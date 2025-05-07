@@ -172,3 +172,13 @@ jobs:
       - name: Test with the dotnet CLI
         working-directory: ./src
         run: dotnet test --no-build
+
+      - name: Pack
+        working-directory: ./src
+        run: dotnet pack --configuration $BuildConfiguration --no-build --output
+
+      - name: Push
+        working-directory: ./src
+        run: dotnet nuget push --source https://nuget.pkg.github.com/JimIBrown/index.json --api-key ${GITHUB_TOKEN}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
