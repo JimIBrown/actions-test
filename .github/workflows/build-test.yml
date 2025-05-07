@@ -12,6 +12,7 @@ on:
     paths:
      - src/**
      - build/**
+     - .github/workflows/build-test.yml
   workflow_dispatch:
   
 jobs:
@@ -172,3 +173,13 @@ jobs:
       - name: Test with the dotnet CLI
         working-directory: ./src
         run: dotnet test --no-build
+
+      - name: Pack
+        working-directory: ./src
+        run: dotnet pack **/*.csproj --configuration $BuildConfiguration --no-build --output ./pkg/
+
+      - name: Push
+        working-directory: ./src
+        run: dotnet nuget push pkg/*.nupkg --source https://nuget.pkg.github.com/JimIBrown/index.json --api-key ${GITHUB_TOKEN}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
